@@ -1,13 +1,13 @@
 package net.corda.gradle.jarfilter
 
 import kotlinx.metadata.ClassName
-import kotlinx.metadata.Flag.Constructor.IS_SECONDARY
 import kotlinx.metadata.KmClass
 import kotlinx.metadata.KmDeclarationContainer
 import kotlinx.metadata.KmFunction
 import kotlinx.metadata.KmPackage
 import kotlinx.metadata.KmProperty
 import kotlinx.metadata.KmTypeAlias
+import kotlinx.metadata.isSecondary
 import kotlinx.metadata.jvm.fieldSignature
 import kotlinx.metadata.jvm.getterSignature
 import kotlinx.metadata.jvm.setterSignature
@@ -98,7 +98,7 @@ abstract class MetadataTransformer<out T : KmDeclarationContainer>(
         for (idx in 0 until properties.size) {
             val property = properties[idx]
             val syntheticMethod = property.syntheticMethodForAnnotations ?: continue
-            if (annotatedMethod.name == syntheticMethod.name && annotatedMethod.descriptor == syntheticMethod.desc) {
+            if (annotatedMethod.name == syntheticMethod.name && annotatedMethod.descriptor == syntheticMethod.descriptor) {
                 /*
                  * Ensure that the accessor functions and the underlying field
                  * are deleted along with the synthetic annotation-holder.
@@ -296,7 +296,7 @@ class ClassMetadataTransformer(
             val constructor = constructors[idx]
             val signature = (constructor.signature ?: continue).toMethodElement()
             if (signature == deleted) {
-                if (IS_SECONDARY(constructor.flags)) {
+                if (constructor.isSecondary) {
                     logger.info("-- removing constructor: {}", deleted.signature)
                 } else {
                     logger.warn("Removing primary constructor: {}{}", className, deleted.descriptor)

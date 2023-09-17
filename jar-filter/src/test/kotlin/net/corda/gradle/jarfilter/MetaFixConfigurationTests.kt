@@ -4,7 +4,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.BuildTask
 import org.gradle.testkit.runner.GradleRunner
-import org.gradle.testkit.runner.TaskOutcome.FAILED
 import org.gradle.testkit.runner.TaskOutcome.NO_SOURCE
 import org.gradle.util.GradleVersion
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -44,7 +43,7 @@ class MetaFixConfigurationTests {
     }
 
     @Test
-    fun checkWithMissingJar() {
+    fun checkMissingJarMeansNoSource() {
         val result = gradleProject("""
             |plugins {
             |    id 'net.corda.plugins.jar-filter'
@@ -54,20 +53,12 @@ class MetaFixConfigurationTests {
             |task metafix(type: MetaFixerTask) {
             |    jars = file('does-not-exist.jar')
             |}
-            |""".trimMargin()).buildAndFail()
+            |""".trimMargin()).build()
         output = result.output
         println(output)
 
-        val exceptions = output.reader().readLines()
-            .filter { it.startsWith("Caused by: ") }
-            .map(::extractExceptionName)
-
-        assertThat(exceptions).hasSize(2)
-        assertThat(exceptions[0]).isEqualTo("org.gradle.api.InvalidUserCodeException")
-        assertThat(exceptions[1]).isIn("java.io.FileNotFoundException", "java.nio.file.NoSuchFileException")
-
         val metafix = result.forTask("metafix")
-        assertEquals(FAILED, metafix.outcome)
+        assertEquals(NO_SOURCE, metafix.outcome)
     }
 
     // The exception class name comes after "Caused by:" and is followed by another ':'.

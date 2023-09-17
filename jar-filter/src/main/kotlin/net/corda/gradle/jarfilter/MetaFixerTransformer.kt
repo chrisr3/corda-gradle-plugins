@@ -1,7 +1,7 @@
 package net.corda.gradle.jarfilter
 
+import kotlinx.metadata.ClassKind
 import kotlinx.metadata.ClassName
-import kotlinx.metadata.Flag
 import kotlinx.metadata.KmClass
 import kotlinx.metadata.KmDeclarationContainer
 import kotlinx.metadata.KmFunction
@@ -10,6 +10,7 @@ import kotlinx.metadata.KmProperty
 import kotlinx.metadata.jvm.fieldSignature
 import kotlinx.metadata.jvm.getterSignature
 import kotlinx.metadata.jvm.signature
+import kotlinx.metadata.kind
 import org.gradle.api.logging.Logger
 
 /**
@@ -25,7 +26,7 @@ abstract class MetaFixerTransformer<out T : KmDeclarationContainer>(
 ) {
     private val properties: MutableList<KmProperty> = metadata.properties
     private val functions: MutableList<KmFunction> = metadata.functions
-    private val isCompanion: Boolean = metadata is KmClass && Flag.Class.IS_COMPANION_OBJECT(metadata.flags)
+    private val isCompanion: Boolean = metadata is KmClass && metadata.kind == ClassKind.COMPANION_OBJECT
 
     protected open val classDescriptor: ClassName = ""
 
@@ -36,7 +37,7 @@ abstract class MetaFixerTransformer<out T : KmDeclarationContainer>(
         var idx = 0
         removed@ while (idx < functions.size) {
             val function = functions[idx]
-            val signature = function.signature?.asString()
+            val signature = function.signature?.toString()
             if (signature != null) {
                 if (!actualMethods.contains(signature)) {
                     logger.info("-- removing method: {}", signature)
@@ -75,11 +76,11 @@ abstract class MetaFixerTransformer<out T : KmDeclarationContainer>(
             val isValidProperty = if (getterMethod == null) {
                 (field == null) || actualFields.contains(field.toFieldElement()) || isCompanion
             } else {
-                actualMethods.contains(getterMethod.asString())
+                actualMethods.contains(getterMethod.toString())
             }
 
             if (!isValidProperty) {
-                logger.info("-- removing property: {},{}", property.name, field?.desc ?: getterMethod?.desc)
+                logger.info("-- removing property: {},{}", property.name, field?.descriptor ?: getterMethod?.descriptor)
                 properties.removeAt(idx)
                 ++count
                 continue@removed
@@ -122,7 +123,7 @@ class ClassMetaFixerTransformer(
 
     override fun filter(): Int {
         var count = filterProperties() + filterFunctions() + filterNestedClasses() + filterSealedSubclassNames()
-        if (!Flag.Class.IS_ANNOTATION_CLASS(metadata.flags)) {
+        if (metadata.kind != ClassKind.ANNOTATION_CLASS) {
             count += filterConstructors()
         }
         return count
@@ -133,7 +134,7 @@ class ClassMetaFixerTransformer(
         var idx = 0
         removed@ while (idx < constructors.size) {
             val constructor = constructors[idx]
-            val signature = constructor.signature?.asString()
+            val signature = constructor.signature?.toString()
             if (signature != null) {
                 if (!actualMethods.contains(signature)) {
                     logger.info("-- removing constructor: {}", signature)

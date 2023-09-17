@@ -13,6 +13,7 @@ import org.gradle.api.file.RegularFile
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Console
+import org.gradle.api.tasks.IgnoreEmptyDirectories
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Internal
@@ -53,6 +54,7 @@ open class JarFilterTask @Inject constructor(objects: ObjectFactory, layouts: Pr
     private val _jars: ConfigurableFileCollection = objects.fileCollection()
     val jars: FileCollection
         @PathSensitive(RELATIVE)
+        @IgnoreEmptyDirectories
         @SkipWhenEmpty
         @InputFiles
         get() = _jars

@@ -72,21 +72,18 @@ abstract class KotlinAwareVisitor(
     }
 
     private fun processClassMetadata(header: Metadata, metadata: KotlinClassMetadata.Class): Metadata? {
-        val kmClass = processClassMetadata(metadata.toKmClass()) ?: return null
+        val kmClass = processClassMetadata(metadata.kmClass) ?: return null
         return KotlinClassMetadata.writeClass(kmClass, header.metadataVersion, header.extraInt)
-            .annotationData
     }
 
     private fun processFileFacadeMetadata(header: Metadata, metadata: KotlinClassMetadata.FileFacade): Metadata? {
-        val kmPackage = processPackageMetadata(metadata.toKmPackage()) ?: return null
+        val kmPackage = processPackageMetadata(metadata.kmPackage) ?: return null
         return KotlinClassMetadata.writeFileFacade(kmPackage, header.metadataVersion, header.extraInt)
-            .annotationData
     }
 
     private fun processMultiFileClassPartMetadata(header: Metadata, metadata: KotlinClassMetadata.MultiFileClassPart): Metadata? {
-        val kmPackage = processPackageMetadata(metadata.toKmPackage()) ?: return null
+        val kmPackage = processPackageMetadata(metadata.kmPackage) ?: return null
         return KotlinClassMetadata.writeMultiFileClassPart(kmPackage, metadata.facadeClassName, header.metadataVersion, header.extraInt)
-            .annotationData
     }
 
     private fun processMetadata(header: Metadata): Metadata? {
@@ -98,7 +95,7 @@ abstract class KotlinAwareVisitor(
                 logger.log(level, "-- synthetic class ignored")
                 null
             }
-            null -> {
+            is KotlinClassMetadata.Unknown -> {
                 throw InvalidUserCodeException("Unsupported metadata version '${header.metadataVersion.joinToString(".")}'")
             }
             else -> {

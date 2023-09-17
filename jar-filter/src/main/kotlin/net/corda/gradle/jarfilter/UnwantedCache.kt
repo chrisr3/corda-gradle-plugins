@@ -3,7 +3,7 @@ package net.corda.gradle.jarfilter
 import java.util.Collections.unmodifiableMap
 
 /**
- * A persistent cache of all of the classes and methods that JarFilter has
+ * A persistent cache of all the classes and methods that JarFilter has
  * removed. This cache belongs to the Gradle task itself and so is shared
  * by successive filter passes.
  *

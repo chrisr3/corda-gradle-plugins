@@ -8,3 +8,7 @@ tasks.named('compileKotlin') {
         freeCompilerArgs = ['-Xjvm-default=all']
     }
 }
+
+tasks.named('compileJava', JavaCompile) {
+    options.release = 8
+}

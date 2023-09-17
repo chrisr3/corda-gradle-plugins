@@ -1,7 +1,6 @@
 @file:JvmName("MetadataTools")
 package net.corda.gradle.jarfilter.asm
 
-import kotlinx.metadata.InconsistentKotlinMetadataException
 import kotlinx.metadata.jvm.KotlinClassMetadata
 import kotlinx.metadata.jvm.Metadata as JvmMetadata
 import net.corda.gradle.jarfilter.ASM_API
@@ -43,11 +42,11 @@ fun <T: Any, X: Any> Class<in T>.metadataAs(template: Class<in X>): ByteArray {
 }
 
 /**
- * Kotlin reflection only supports classes atm, so use this to examine file metadata.
+ * Kotlin Reflection only supports classes atm, so use this to examine file metadata.
  */
 val Class<*>.fileMetadata: FileMetadata get() {
     val metadata = (KotlinClassMetadata.read(readMetadata()) as? KotlinClassMetadata.FileFacade
-        ?: throw InconsistentKotlinMetadataException("Unknown metadata format")).toKmPackage()
+        ?: throw IllegalArgumentException("Unknown metadata format")).kmPackage
     return FileMetadata(metadata)
 }
 
@@ -56,7 +55,7 @@ val Class<*>.fileMetadata: FileMetadata get() {
  */
 val Class<*>.classMetadata: ClassMetadata get() {
     val metadata = (KotlinClassMetadata.read(readMetadata()) as? KotlinClassMetadata.Class
-        ?: throw InconsistentKotlinMetadataException("Unknown metadata format")).toKmClass()
+        ?: throw IllegalArgumentException("Unknown metadata format")).kmClass
     return ClassMetadata(metadata)
 }
 

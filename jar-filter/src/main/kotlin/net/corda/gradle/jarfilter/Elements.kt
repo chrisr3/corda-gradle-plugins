@@ -2,9 +2,8 @@
 package net.corda.gradle.jarfilter
 
 import kotlinx.metadata.ClassName
-import kotlinx.metadata.Flag.ValueParameter.DECLARES_DEFAULT_VALUE
 import kotlinx.metadata.KmValueParameter
-import kotlinx.metadata.flagsOf
+import kotlinx.metadata.declaresDefaultValue
 import kotlinx.metadata.jvm.JvmFieldSignature
 import kotlinx.metadata.jvm.JvmMethodSignature
 import org.objectweb.asm.Opcodes.ACC_PRIVATE
@@ -19,7 +18,7 @@ private const val DUMMY_ELEMENT: Int = ACC_PUBLIC or ACC_PROTECTED or ACC_PRIVAT
 private const val NO_EXTENSION = ""
 private const val DUMMY_PASSES = 1
 
-private val DECLARES_DEFAULT_VALUE_MASK: Int = flagsOf(DECLARES_DEFAULT_VALUE).inv()
+//private val DECLARES_DEFAULT_VALUE_MASK: Int = flagsOf(DECLARES_DEFAULT_VALUE).inv()
 
 typealias AnnotatedMethod = Pair<String, MethodElement>
 typealias UnwantedMap = MutableMap<ClassName, MutableList<AnnotatedMethod>>
@@ -159,22 +158,22 @@ fun String.toKotlinDefaultFunction(classDescriptor: String): String {
 /**
  * Convert Kotlin method data to [MethodElement] objects.
  */
-fun JvmMethodSignature.toMethodElement() = MethodElement(name, desc)
+fun JvmMethodSignature.toMethodElement() = MethodElement(name, descriptor)
 
 /**
  * Convert Kotlin field data to [FieldElement] objects.
  */
-fun JvmFieldSignature.toFieldElement() = FieldElement(name, desc)
+fun JvmFieldSignature.toFieldElement() = FieldElement(name, descriptor)
 
 /**
  * Removes the "has a default value" flag from a constructor/function parameter.
  */
 fun KmValueParameter.clearDeclaresDefaultValue(): KmValueParameter {
-    if (DECLARES_DEFAULT_VALUE(flags)) {
-        flags = flags and DECLARES_DEFAULT_VALUE_MASK
+    if (declaresDefaultValue) {
+        declaresDefaultValue = false
     }
     return this
 }
 
 val List<KmValueParameter>.hasAnyDefaultValues
-    get() = any { DECLARES_DEFAULT_VALUE(it.flags) }
+    get() = any(KmValueParameter::declaresDefaultValue)
