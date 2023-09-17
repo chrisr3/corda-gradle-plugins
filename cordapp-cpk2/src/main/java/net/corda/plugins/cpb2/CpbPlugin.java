@@ -17,18 +17,19 @@ import org.jetbrains.annotations.NotNull;
 
 import static net.corda.plugins.cpk2.CordappUtils.ALL_CORDAPPS_CONFIGURATION_NAME;
 import static net.corda.plugins.cpk2.CordappUtils.copyJarEnabledTo;
-import static net.corda.plugins.cpk2.CordappUtils.setCannotBeDeclared;
 import static net.corda.plugins.cpk2.SignJar.sign;
 import static net.corda.plugins.cpk2.SigningProperties.nested;
 import static org.gradle.api.artifacts.Dependency.ARCHIVES_CONFIGURATION;
 import static org.gradle.api.plugins.JavaPlugin.JAR_TASK_NAME;
 
+@SuppressWarnings("unused")
 public final class CpbPlugin implements Plugin<Project> {
     private static final String CPB_TASK_NAME = "cpb";
     private static final String CPB_CONFIGURATION_NAME = CPB_TASK_NAME;
     private static final String CORDA_CPB_CONFIGURATION_NAME = "cordaCPB";
     private static final String CPB_PACKAGING_CONFIGURATION_NAME = "cpbPackaging";
 
+    @SuppressWarnings("UnstableApiUsage")
     @Override
     public void apply(@NotNull Project project) {
         project.getPluginManager().apply(CordappPlugin.class);
@@ -47,12 +48,12 @@ public final class CpbPlugin implements Plugin<Project> {
             .setVisible(false)
             .extendsFrom(cpbConfiguration);
         cpbPackaging.setCanBeConsumed(false);
-        setCannotBeDeclared(cpbPackaging);
+        cpbPackaging.setCanBeDeclared(false);
 
         final Configuration cordaCPB = project.getConfigurations().create(CORDA_CPB_CONFIGURATION_NAME)
             .attributes(attributor::forCpb);
         cordaCPB.setCanBeResolved(false);
-        setCannotBeDeclared(cordaCPB);
+        cordaCPB.setCanBeDeclared(false);
 
         final TaskProvider<Jar> cpkTask = project.getTasks().named(JAR_TASK_NAME, Jar.class);
         final Provider<RegularFile> cpkPath = cpkTask.flatMap(Jar::getArchiveFile);

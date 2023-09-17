@@ -86,7 +86,6 @@ import static net.corda.plugins.cpk2.CordappUtils.mapTo;
 import static net.corda.plugins.cpk2.CordappUtils.maxOf;
 import static net.corda.plugins.cpk2.CordappUtils.parseInstruction;
 import static net.corda.plugins.cpk2.CordappUtils.parseInstructions;
-import static net.corda.plugins.cpk2.CordappUtils.setCannotBeDeclared;
 import static org.gradle.api.file.DuplicatesStrategy.FAIL;
 import static org.gradle.api.plugins.JavaBasePlugin.UNPUBLISHABLE_VARIANT_ARTIFACTS;
 import static org.gradle.api.plugins.JavaPlugin.API_ELEMENTS_CONFIGURATION_NAME;
@@ -118,7 +117,7 @@ public final class CordappPlugin implements Plugin<Project> {
     private static final String CORDAPP_COMPONENT_NAME = "cordapp";
     private static final String CORDAPP_EXTENSION_NAME = "cordapp";
     private static final String OSGI_EXTENSION_NAME = "osgi";
-    private static final String MIN_GRADLE_VERSION = "7.2";
+    private static final String MIN_GRADLE_VERSION = "8.2";
     private static final String UNKNOWN = "Unknown";
     private static final int MINIMUM_PLATFORM = 1;
     private static final int TARGET_PLATFORM = 0;
@@ -172,7 +171,7 @@ public final class CordappPlugin implements Plugin<Project> {
         this.softwareComponentFactory = softwareComponentFactory;
     }
 
-    @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
+    @SuppressWarnings({"SynchronizationOnLocalVariableOrMethodParameter", "UnstableApiUsage"})
     @Override
     public void apply(@NotNull Project project) {
         project.getLogger().info("Configuring {} as a CorDapp", project.getName());
@@ -213,7 +212,7 @@ public final class CordappPlugin implements Plugin<Project> {
         final Configuration cordaCPK = configurations.create(CORDA_CPK_CONFIGURATION_NAME)
             .attributes(attributor::forJar);
         cordaCPK.setCanBeResolved(false);
-        setCannotBeDeclared(cordaCPK);
+        cordaCPK.setCanBeDeclared(false);
 
         final AdhocComponentWithVariants component = softwareComponentFactory.adhoc(CORDAPP_COMPONENT_NAME);
         component.addVariantsFromConfiguration(configurations.getByName(API_ELEMENTS_CONFIGURATION_NAME),
@@ -321,14 +320,14 @@ public final class CordappPlugin implements Plugin<Project> {
                 .extendsFrom(cordaEmbedded, configurations.getByName(RUNTIME_ELEMENTS_CONFIGURATION_NAME))
                 .attributes(attributor::forRuntimeClasspath);
             cordappPackaging.setCanBeConsumed(false);
-            setCannotBeDeclared(cordappPackaging);
+            cordappPackaging.setCanBeDeclared(false);
 
             final Configuration cordappExternal = configurations.create(CORDAPP_EXTERNAL_CONFIGURATION_NAME)
                 .setVisible(false)
                 .extendsFrom(allProvided, allCordapps)
                 .attributes(attributor::forCompileClasspath);
             cordappExternal.setCanBeConsumed(false);
-            setCannotBeDeclared(cordappExternal);
+            cordappExternal.setCanBeDeclared(false);
 
         // We need to perform some extra work on the root project to support publication.
         project.getPluginManager().withPlugin("maven-publish", new CordappPublishing(project.getRootProject()));
@@ -550,8 +549,7 @@ public final class CordappPlugin implements Plugin<Project> {
         }
     }
 
-    @NotNull
-    private int[] checkPlatformVersionInfo() {
+    private int @NotNull [] checkPlatformVersionInfo() {
         // If the minimum platform version is not set, it defaults to X.
         final int minimumPlatformVersion = cordapp.getMinimumPlatformVersion().get();
         final int targetPlatformVersion = cordapp.getTargetPlatformVersion().get();

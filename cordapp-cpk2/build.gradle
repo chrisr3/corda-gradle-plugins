@@ -14,7 +14,7 @@ ext {
     osgi_service_component_version = '1.5.0'
     test_persistence_api_version = '2.2'
     test_hibernate_version = '5.4.32.Final'
-    test_kotlin_version = '1.7.10'
+    test_kotlin_version = '1.9.10'
     corda_guava_version = '20.0'
 }
 
@@ -97,7 +97,7 @@ dependencies {
     implementation "biz.aQute.bnd:biz.aQute.bnd.gradle:$bnd_version"
     implementation "biz.aQute.bnd:biz.aQute.bndlib:$bndlib_version"
 
-    testImplementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+    testImplementation 'org.jetbrains.kotlin:kotlin-stdlib'
     testImplementation "org.junit.jupiter:junit-jupiter:$junit_jupiter_version"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit_jupiter_version"
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
@@ -140,15 +140,15 @@ processTestResources {
 
 tasks.named('compileTestKotlin') {
     kotlinOptions {
-        apiVersion = '1.7'
-        languageVersion = '1.7'
+        apiVersion = '1.8'
+        languageVersion = '1.8'
         freeCompilerArgs = ['-Xjvm-default=all']
     }
 }
 
 tasks.withType(Test).configureEach {
     javaLauncher = javaToolchains.launcherFor {
-        languageVersion = of(11)
+        languageVersion = of(17)
     }
 
     // Resolve warnings about "illegal reflective access" that
@@ -157,6 +157,5 @@ tasks.withType(Test).configureEach {
             '--add-opens', 'java.base/java.lang=ALL-UNNAMED',
             '--add-opens', 'java.base/java.util=ALL-UNNAMED',
             '--add-opens', 'java.base/java.util.jar=ALL-UNNAMED',
-            '--add-opens', 'java.base/java.util.zip=ALL-UNNAMED',
-            '--illegal-access=warn'
+            '--add-opens', 'java.base/java.util.zip=ALL-UNNAMED'
 }

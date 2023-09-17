@@ -26,7 +26,7 @@ class VerifyCordappDependencyTest {
         private const val cordappVersion = "1.1.1-SNAPSHOT"
         private const val hostVersion = "2.0.0-SNAPSHOT"
 
-        private const val kotlinOsgiVersion = "version=\"[1.7,2)\""
+        private const val kotlinOsgiVersion = "version=\"[1.9,2)\""
         private const val cordaOsgiVersion = "version=\"[5.0,6)\""
         private const val cordappOsgiVersion = "version=\"[1.1,2)\""
         private const val hostOsgiVersion = "version=\"2.0.0\""
@@ -86,7 +86,7 @@ class VerifyCordappDependencyTest {
             assertThatHeader(getValue(EXPORT_PACKAGE)).containsAll(
                 "com.example.host;uses:=\"kotlin,net.corda.v5.ledger.contracts,net.corda.v5.ledger.transactions\";$hostOsgiVersion"
             )
-            assertEquals("osgi.ee;filter:=\"(&(osgi.ee=JavaSE)(version=11))\"", getValue(REQUIRE_CAPABILITY))
+            assertEquals("osgi.ee;filter:=\"(&(osgi.ee=JavaSE)(version=17))\"", getValue(REQUIRE_CAPABILITY))
             assertEquals("Test-Licence", getValue(BUNDLE_LICENSE))
             assertEquals("R3", getValue(BUNDLE_VENDOR))
             assertEquals("true", getValue("Sealed"))

@@ -17,7 +17,7 @@ class ConfigureCordaMetadataTest {
         private const val CORDAPP_VERSION = "1.1.1-SNAPSHOT"
         private const val HIBERNATE_ANNOTATIONS_PACKAGE = "org.hibernate.annotations"
         private const val HIBERNATE_PROXY_PACKAGE = "org.hibernate.proxy"
-        private const val KOTLIN_OSGI_VERSION = "version=[1.7,1.8)"
+        private const val KOTLIN_OSGI_VERSION = "version=[1.9,1.10)"
         private const val CORDA_OSGI_VERSION = "version=[5,6)"
     }
 

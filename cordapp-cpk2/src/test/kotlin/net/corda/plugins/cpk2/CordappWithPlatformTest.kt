@@ -22,7 +22,7 @@ import java.nio.file.Path
 @TestInstance(PER_CLASS)
 class CordappWithPlatformTest {
     private companion object {
-        private const val kotlinOsgiVersion = "version=\"[1.7,2)\""
+        private const val kotlinOsgiVersion = "version=\"[1.9,2)\""
         private const val cordaOsgiVersion = "version=\"[5.0,6)\""
 
         private const val cordappVersion = "3.2.1-SNAPSHOT"
@@ -84,7 +84,7 @@ class CordappWithPlatformTest {
                 "uses:=kotlin,net.corda.v5.ledger.contracts,net.corda.v5.ledger.transactions",
                 "version=${osgiVersion(cordappVersion).withoutQualifier}"
             )
-            assertEquals("osgi.ee;filter:=\"(&(osgi.ee=JavaSE)(version=11))\"", getValue(REQUIRE_CAPABILITY))
+            assertEquals("osgi.ee;filter:=\"(&(osgi.ee=JavaSE)(version=17))\"", getValue(REQUIRE_CAPABILITY))
         }
     }
 }

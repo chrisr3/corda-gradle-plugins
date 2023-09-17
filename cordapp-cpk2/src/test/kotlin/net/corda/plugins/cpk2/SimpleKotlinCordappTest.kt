@@ -32,7 +32,7 @@ class SimpleKotlinCordappTest {
 
         private const val ioOsgiVersion = "version=\"[1.4,2)\""
         private const val guavaOsgiVersion = "version=\"[29.0,30)\""
-        private const val kotlinOsgiVersion = "version=\"[1.7,2)\""
+        private const val kotlinOsgiVersion = "version=\"[1.9,2)\""
         private const val cordaOsgiVersion = "version=\"[5.0,6)\""
         private const val cordappOsgiVersion = "version=\"1.0.1\""
     }
@@ -98,7 +98,7 @@ class SimpleKotlinCordappTest {
                 "com.google.errorprone.annotations.concurrent;",
                 "com.google.j2objc.annotations;"
             )
-            assertEquals("osgi.ee;filter:=\"(&(osgi.ee=JavaSE)(version=11))\"", getValue(REQUIRE_CAPABILITY))
+            assertEquals("osgi.ee;filter:=\"(&(osgi.ee=JavaSE)(version=17))\"", getValue(REQUIRE_CAPABILITY))
             assertEquals("Test-Licence", getValue(BUNDLE_LICENSE))
             assertEquals("R3", getValue(BUNDLE_VENDOR))
             assertEquals("true", getValue("Sealed"))

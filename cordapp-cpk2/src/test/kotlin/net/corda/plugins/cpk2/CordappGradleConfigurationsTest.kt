@@ -16,7 +16,7 @@ import kotlin.streams.asSequence
 @TestInstance(PER_CLASS)
 class CordappGradleConfigurationsTest {
     private companion object {
-        private val GRADLE_7_2 = GradleVersion.version("7.2")
+        private val GRADLE_8_2 = GradleVersion.version("8.2")
     }
 
     private lateinit var testProject: GradleProject
@@ -25,7 +25,7 @@ class CordappGradleConfigurationsTest {
     @BeforeAll
     fun setup(@TempDir testProjectDir: Path, reporter: TestReporter) {
         testProject = GradleProject(testProjectDir, reporter)
-            .withGradleVersion(GRADLE_7_2)
+            .withGradleVersion(GRADLE_8_2)
             .withBuildScript("""\
                 |plugins {
                 |    id 'net.corda.plugins.cordapp-cpk2'
