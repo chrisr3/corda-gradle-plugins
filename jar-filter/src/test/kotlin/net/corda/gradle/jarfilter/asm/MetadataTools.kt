@@ -45,7 +45,7 @@ fun <T: Any, X: Any> Class<in T>.metadataAs(template: Class<in X>): ByteArray {
  * Kotlin Reflection only supports classes atm, so use this to examine file metadata.
  */
 val Class<*>.fileMetadata: FileMetadata get() {
-    val metadata = (KotlinClassMetadata.read(readMetadata()) as? KotlinClassMetadata.FileFacade
+    val metadata = (KotlinClassMetadata.readStrict(readMetadata()) as? KotlinClassMetadata.FileFacade
         ?: throw IllegalArgumentException("Unknown metadata format")).kmPackage
     return FileMetadata(metadata)
 }
@@ -54,7 +54,7 @@ val Class<*>.fileMetadata: FileMetadata get() {
  * For accessing the parts of class metadata that Kotlin reflection cannot reach.
  */
 val Class<*>.classMetadata: ClassMetadata get() {
-    val metadata = (KotlinClassMetadata.read(readMetadata()) as? KotlinClassMetadata.Class
+    val metadata = (KotlinClassMetadata.readStrict(readMetadata()) as? KotlinClassMetadata.Class
         ?: throw IllegalArgumentException("Unknown metadata format")).kmClass
     return ClassMetadata(metadata)
 }

@@ -3,6 +3,7 @@ package net.corda.gradle.jarfilter
 
 import kotlinx.metadata.KmClass
 import kotlinx.metadata.KmPackage
+import kotlinx.metadata.jvm.JvmMetadataVersion
 import kotlinx.metadata.jvm.KotlinClassMetadata
 import kotlinx.metadata.jvm.Metadata as JvmMetadata
 import org.gradle.api.InvalidUserCodeException
@@ -73,21 +74,21 @@ abstract class KotlinAwareVisitor(
 
     private fun processClassMetadata(header: Metadata, metadata: KotlinClassMetadata.Class): Metadata? {
         val kmClass = processClassMetadata(metadata.kmClass) ?: return null
-        return KotlinClassMetadata.writeClass(kmClass, header.metadataVersion, header.extraInt)
+        return KotlinClassMetadata.Class(kmClass, toJvmMetadataVersion(header), header.extraInt).write()
     }
 
     private fun processFileFacadeMetadata(header: Metadata, metadata: KotlinClassMetadata.FileFacade): Metadata? {
         val kmPackage = processPackageMetadata(metadata.kmPackage) ?: return null
-        return KotlinClassMetadata.writeFileFacade(kmPackage, header.metadataVersion, header.extraInt)
+        return KotlinClassMetadata.FileFacade(kmPackage, toJvmMetadataVersion(header), header.extraInt).write()
     }
 
     private fun processMultiFileClassPartMetadata(header: Metadata, metadata: KotlinClassMetadata.MultiFileClassPart): Metadata? {
         val kmPackage = processPackageMetadata(metadata.kmPackage) ?: return null
-        return KotlinClassMetadata.writeMultiFileClassPart(kmPackage, metadata.facadeClassName, header.metadataVersion, header.extraInt)
+        return KotlinClassMetadata.MultiFileClassPart(kmPackage, metadata.facadeClassName, toJvmMetadataVersion(header), header.extraInt).write()
     }
 
     private fun processMetadata(header: Metadata): Metadata? {
-        return when (val metadata = KotlinClassMetadata.read(header)) {
+        return when (val metadata = KotlinClassMetadata.readStrict(header)) {
             is KotlinClassMetadata.Class -> processClassMetadata(header, metadata)
             is KotlinClassMetadata.FileFacade -> processFileFacadeMetadata(header, metadata)
             is KotlinClassMetadata.MultiFileClassPart -> processMultiFileClassPartMetadata(header, metadata)
@@ -197,3 +198,6 @@ abstract class KotlinBeforeProcessor(
      */
     final override fun processKotlinAnnotation() = processMetadata()
 }
+
+private fun toJvmMetadataVersion(metadata: Metadata)
+    = metadata.metadataVersion.let { JvmMetadataVersion(it[0], it[1], it[2]) }
