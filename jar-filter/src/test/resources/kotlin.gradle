@@ -1,5 +1,11 @@
 import static org.gradle.api.JavaVersion.VERSION_1_8
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
+}
+
 tasks.named('compileKotlin') {
     kotlinOptions {
         jvmTarget = VERSION_1_8
@@ -7,8 +13,4 @@ tasks.named('compileKotlin') {
         languageVersion = kotlin_api_version
         freeCompilerArgs = ['-Xjvm-default=all']
     }
-}
-
-tasks.named('compileJava', JavaCompile) {
-    options.release = 8
 }
